@@ -107,3 +107,19 @@ CREATE TABLE Silver.Marketingstatus
 );
 GO
 
+-- ============================================================
+-- SILVER LAYER - SUBMISSION
+-- Create Silver.Submission table
+-- ============================================================
+
+CREATE TABLE Silver.Submission
+(
+    ApplNo NVARCHAR(50),
+    SubmissionType NVARCHAR(100),
+    SubmissionNo NVARCHAR(50),
+    SubmissionStatus NVARCHAR(100),
+    SubmissionClassCodeID NVARCHAR(50),
+    SubmissionStatusDate DATE
+);
+GO
+

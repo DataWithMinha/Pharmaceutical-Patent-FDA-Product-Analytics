@@ -123,3 +123,16 @@ CREATE TABLE Silver.Submission
 );
 GO
 
+-- ============================================================
+-- SILVER LAYER - TE
+-- Create Silver.TE table
+-- ============================================================
+
+CREATE TABLE Silver.TE
+(
+    ApplNo NVARCHAR(50),
+    ProductNo NVARCHAR(50),
+    MarketingStatusID INT,
+    TECode NVARCHAR(50)
+);
+GO

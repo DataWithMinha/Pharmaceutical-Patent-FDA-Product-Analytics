@@ -65,3 +65,61 @@ CREATE TABLE Silver.Exclusivity
     Exclusivity_Date DATE
 );
 GO
+    
+-- ============================================================
+-- SILVER LAYER - PRODUCTS
+-- ============================================================
+
+CREATE TABLE Silver.Products
+(
+    ApplNo NVARCHAR(50),
+    ProductNo NVARCHAR(50),
+    Form NVARCHAR(500),
+    Strength NVARCHAR(500),
+    ReferenceDrug NVARCHAR(50),
+    DrugName NVARCHAR(500),
+    ActiveIngredient NVARCHAR(500),
+    ReferenceStandard NVARCHAR(50)
+);
+GO
+-- ============================================================
+-- SILVER LAYER - APPLICATION
+-- ============================================================
+
+CREATE TABLE Silver.Application
+(
+    ApplNo NVARCHAR(50),
+    ApplType NVARCHAR(100),
+    ApplPublicNotes NVARCHAR(MAX),
+    SponsorName NVARCHAR(500)
+);
+GO
+-- ============================================================
+-- SILVER LAYER - PRODUCTS
+-- ============================================================
+
+CREATE TABLE Silver.Products
+(
+    ApplNo NVARCHAR(50),
+    ProductNo NVARCHAR(50),
+    Form NVARCHAR(500),
+    Strength NVARCHAR(500),
+    ReferenceDrug NVARCHAR(50),
+    DrugName NVARCHAR(500),
+    ActiveIngredient NVARCHAR(500),
+    ReferenceStandard NVARCHAR(50)
+);
+GO
+-- ============================================================
+-- SILVER LAYER - MARKETING STATUS
+-- ============================================================
+
+CREATE TABLE Silver.Marketingstatus
+(
+    MarketingStatusID INT,
+    ApplNo NVARCHAR(50),
+    ProductNo NVARCHAR(50),
+    MarketingStatus NVARCHAR(200)
+);
+GO
+

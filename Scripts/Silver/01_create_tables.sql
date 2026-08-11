@@ -30,3 +30,23 @@ CREATE TABLE Silver.Product
     Applicant_Full_Name NVARCHAR(500)
 );
 GO
+
+-- ============================================================
+-- SILVER LAYER - PATENT
+-- Create Silver.Patent table
+-- ============================================================
+
+CREATE TABLE Silver.Patent
+(
+    Appl_Type NVARCHAR(100),
+    Appl_No NVARCHAR(100),
+    Product_No NVARCHAR(100),
+    Patent_No NVARCHAR(100),
+    Patent_Expire_Date DATE,
+    Drug_Substance_Flag NVARCHAR(50),
+    Drug_Product_Flag NVARCHAR(50),
+    Patent_Use_Code NVARCHAR(500),
+    Delist_Flag NVARCHAR(50),
+    Submission_Date DATE
+);
+GO

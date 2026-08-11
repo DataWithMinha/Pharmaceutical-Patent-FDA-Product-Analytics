@@ -184,3 +184,100 @@ SELECT
 
 FROM Bronze.Exclusivity;
 GO
+-- ============================================================
+-- SILVER LAYER - APPLICATION
+-- ============================================================
+
+TRUNCATE TABLE Silver.Application;
+GO
+
+INSERT INTO Silver.Application
+(
+    ApplNo,
+    ApplType,
+    ApplPublicNotes,
+    SponsorName
+)
+SELECT
+    ApplNo,
+
+    CASE
+        WHEN ApplType = 'ANDA'
+            THEN 'Abbreviated New Drug Application'
+        WHEN ApplType = 'NDA'
+            THEN 'New Drug Application'
+        WHEN ApplType = 'BLA'
+            THEN 'Biologics License Application'
+        ELSE ApplType
+    END AS ApplType,
+
+    ApplPublicNotes,
+    SponsorName
+
+FROM Bronze.Application;
+GO
+-- ============================================================
+-- SILVER LAYER - PRODUCTS
+-- ============================================================
+
+TRUNCATE TABLE Silver.Products;
+GO
+
+INSERT INTO Silver.Products
+(
+    ApplNo,
+    ProductNo,
+    Form,
+    Strength,
+    ReferenceDrug,
+    DrugName,
+    ActiveIngredient,
+    ReferenceStandard
+)
+SELECT
+    ApplNo,
+    ProductNo,
+    Form,
+    Strength,
+    ReferenceDrug,
+    DrugName,
+    ActiveIngredient,
+    ReferenceStandard
+
+FROM Bronze.Products;
+GO
+-- ============================================================
+-- SILVER LAYER - MARKETING STATUS
+-- ============================================================
+
+TRUNCATE TABLE Silver.Marketingstatus;
+GO
+
+INSERT INTO Silver.Marketingstatus
+(
+    MarketingStatusID,
+    ApplNo,
+    ProductNo,
+    MarketingStatus
+)
+SELECT
+    MarketingStatusID,
+    ApplNo,
+    ProductNo,
+
+    CASE
+        WHEN MarketingStatusID = 1
+            THEN 'Prescription'
+        WHEN MarketingStatusID = 2
+            THEN 'Over-the-counter'
+        WHEN MarketingStatusID = 3
+            THEN 'Discontinued'
+        WHEN MarketingStatusID = 4
+            THEN 'None (Tentative Approval)'
+        WHEN MarketingStatusID = 5
+            THEN 'For Further Manufacturing Use'
+        ELSE NULL
+    END AS MarketingStatus
+
+FROM Bronze.Marketingstatus;
+GO

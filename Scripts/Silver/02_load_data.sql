@@ -73,3 +73,70 @@ SELECT
 
 FROM Bronze.Product;
 GO
+
+-- ============================================================
+-- SILVER LAYER - PATENT
+-- Load and transform data from Bronze.Patent
+-- ============================================================
+
+-- Remove previously loaded data before reloading
+-- with the updated transformations.
+TRUNCATE TABLE Silver.Patent;
+GO
+
+INSERT INTO Silver.Patent
+(
+    Appl_Type,
+    Appl_No,
+    Product_No,
+    Patent_No,
+    Patent_Expire_Date,
+    Drug_Substance_Flag,
+    Drug_Product_Flag,
+    Patent_Use_Code,
+    Delist_Flag,
+    Submission_Date
+)
+SELECT
+
+    -- Convert application type code
+    -- N = New Drug Application
+    CASE
+        WHEN Appl_Type = 'N'
+            THEN 'New Drug Application'
+        ELSE Appl_Type
+    END AS Appl_Type,
+
+    Appl_No,
+    Product_No,
+    Patent_No,
+
+    -- Convert patent expiry date from NVARCHAR to DATE
+    TRY_CONVERT(DATE, Patent_Expire_Date_Text)
+        AS Patent_Expire_Date,
+
+    -- Y = DS
+    -- NULL remains NULL
+    CASE
+        WHEN Drug_Substance_Flag = 'Y'
+            THEN 'DS'
+        ELSE NULL
+    END AS Drug_Substance_Flag,
+
+    -- Y = DP
+    -- NULL remains NULL
+    CASE
+        WHEN Drug_Product_Flag = 'Y'
+            THEN 'DP'
+        ELSE NULL
+    END AS Drug_Product_Flag,
+
+    Patent_Use_Code,
+    Delist_Flag,
+
+    -- Convert submission date from NVARCHAR to DATE
+    TRY_CONVERT(DATE, Submission_Date)
+        AS Submission_Date
+
+FROM Bronze.Patent;
+GO

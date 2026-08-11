@@ -318,3 +318,135 @@ GROUP BY
 HAVING COUNT(*) > 1
 ORDER BY Duplicate_Count DESC;
 GO
+
+-- ============================================================
+-- SILVER LAYER - SUBMISSION
+-- FINAL DATA QUALITY CHECKS
+-- ============================================================
+
+-- 1. Check total number of rows
+SELECT COUNT(*) AS Total_Rows
+FROM Silver.Submission;
+
+
+-- 2. Check for NULL values
+SELECT
+    COUNT(*) - COUNT(ApplNo) AS Missing_ApplNo,
+    COUNT(*) - COUNT(SubmissionType) AS Missing_SubmissionType,
+    COUNT(*) - COUNT(SubmissionNo) AS Missing_SubmissionNo,
+    COUNT(*) - COUNT(SubmissionStatus) AS Missing_SubmissionStatus,
+    COUNT(*) - COUNT(SubmissionClassCodeID) AS Missing_SubmissionClassCodeID,
+    COUNT(*) - COUNT(SubmissionStatusDate) AS Missing_SubmissionStatusDate
+FROM Silver.Submission;
+
+
+-- 3. Check Submission Type values
+SELECT DISTINCT
+    SubmissionType
+FROM Silver.Submission;
+
+
+-- 4. Check Submission Status values
+SELECT DISTINCT
+    SubmissionStatus
+FROM Silver.Submission;
+
+
+-- 5. Check Submission Class Codes
+SELECT DISTINCT
+    SubmissionClassCodeID
+FROM Silver.Submission
+ORDER BY SubmissionClassCodeID;
+
+
+-- 6. Check Submission Status Date
+SELECT TOP 20
+    SubmissionStatusDate
+FROM Silver.Submission;
+
+
+-- 7. Check for duplicate Application + Submission combinations
+SELECT
+    ApplNo,
+    SubmissionNo,
+    COUNT(*) AS Duplicate_Count
+FROM Silver.Submission
+GROUP BY
+    ApplNo,
+    SubmissionNo
+HAVING COUNT(*) > 1
+ORDER BY Duplicate_Count DESC;
+
+
+-- ============================================================
+-- VALIDATION NOTES
+-- ============================================================
+
+-- SubmissionStatus contains 1 source-data NULL.
+--
+-- SubmissionClassCodeID contains 11,887 source-data NULLs.
+--
+-- SubmissionStatusDate contains 4 source-data NULLs.
+--
+-- Bronze SubmissionStatusDate is stored in DD-MM-YYYY HH:MM
+-- format. Style 105 was used during the Silver transformation
+-- to correctly convert the value to DATE.
+--
+-- Duplicate ApplNo + SubmissionNo combinations should be
+-- investigated before being considered actual duplicates.
+GO
+-- ============================================================
+-- SILVER LAYER - TE
+-- DATA QUALITY CHECKS
+-- ============================================================
+
+-- 1. Check total number of rows
+SELECT COUNT(*) AS Total_Rows
+FROM Silver.TE;
+
+
+-- 2. Check for NULL values
+SELECT
+    COUNT(*) - COUNT(ApplNo) AS Missing_ApplNo,
+    COUNT(*) - COUNT(ProductNo) AS Missing_ProductNo,
+    COUNT(*) - COUNT(MarketingStatusID) AS Missing_MarketingStatusID,
+    COUNT(*) - COUNT(TECode) AS Missing_TECode
+FROM Silver.TE;
+
+
+-- 3. Check TE Codes
+SELECT DISTINCT
+    TECode
+FROM Silver.TE
+ORDER BY TECode;
+
+
+-- 4. Check Marketing Status IDs
+SELECT DISTINCT
+    MarketingStatusID
+FROM Silver.TE
+ORDER BY MarketingStatusID;
+
+
+-- 5. Check for invalid Marketing Status IDs
+SELECT DISTINCT
+    MarketingStatusID
+FROM Silver.TE
+WHERE MarketingStatusID NOT IN (1, 2, 3, 4, 5)
+   OR MarketingStatusID IS NULL;
+
+
+-- 6. Check for duplicate Application + Product + TE Code
+SELECT
+    ApplNo,
+    ProductNo,
+    TECode,
+    COUNT(*) AS Duplicate_Count
+FROM Silver.TE
+GROUP BY
+    ApplNo,
+    ProductNo,
+    TECode
+HAVING COUNT(*) > 1
+ORDER BY Duplicate_Count DESC;
+GO

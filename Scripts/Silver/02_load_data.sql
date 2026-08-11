@@ -140,3 +140,47 @@ SELECT
 
 FROM Bronze.Patent;
 GO
+
+-- ============================================================
+-- SILVER LAYER - EXCLUSIVITY
+-- Load and transform data from Bronze.Exclusivity
+-- ============================================================
+
+-- Remove previously loaded data before reloading
+-- with the updated transformations.
+TRUNCATE TABLE Silver.Exclusivity;
+GO
+
+INSERT INTO Silver.Exclusivity
+(
+    Appl_Type,
+    Appl_No,
+    Product_No,
+    Exclusivity_Code,
+    Exclusivity_Date
+)
+SELECT
+
+    -- Convert application type codes into full descriptions
+    CASE
+        WHEN Appl_Type = 'N'
+            THEN 'New Drug Application'
+
+        WHEN Appl_Type = 'A'
+            THEN 'Abbreviated New Drug Application'
+
+        ELSE Appl_Type
+    END AS Appl_Type,
+
+    Appl_No,
+    Product_No,
+
+    -- Keep FDA exclusivity codes as provided
+    Exclusivity_Code,
+
+    -- Convert exclusivity expiration date from NVARCHAR to DATE
+    TRY_CONVERT(DATE, Exclusivity_Date)
+        AS Exclusivity_Date
+
+FROM Bronze.Exclusivity;
+GO

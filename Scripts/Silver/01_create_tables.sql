@@ -50,3 +50,18 @@ CREATE TABLE Silver.Patent
     Submission_Date DATE
 );
 GO
+
+-- ============================================================
+-- SILVER LAYER - EXCLUSIVITY
+-- Create Silver.Exclusivity table
+-- ============================================================
+
+CREATE TABLE Silver.Exclusivity
+(
+    Appl_Type NVARCHAR(100),
+    Appl_No NVARCHAR(100),
+    Product_No NVARCHAR(100),
+    Exclusivity_Code NVARCHAR(100),
+    Exclusivity_Date DATE
+);
+GO

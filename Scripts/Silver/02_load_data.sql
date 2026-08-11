@@ -281,3 +281,59 @@ SELECT
 
 FROM Bronze.Marketingstatus;
 GO
+
+-- ============================================================
+-- SILVER LAYER - SUBMISSION
+-- Load and transform data from Bronze.Submission
+-- ============================================================
+
+-- Remove previously loaded data before reloading
+TRUNCATE TABLE Silver.Submission;
+GO
+
+INSERT INTO Silver.Submission
+(
+    ApplNo,
+    SubmissionType,
+    SubmissionNo,
+    SubmissionStatus,
+    SubmissionClassCodeID,
+    SubmissionStatusDate
+)
+SELECT
+    ApplNo,
+
+    -- Convert submission type codes into descriptions
+    CASE
+        WHEN TRIM(SubmissionType) = 'ORIG'
+            THEN 'Original Submission'
+
+        WHEN TRIM(SubmissionType) = 'SUPPL'
+            THEN 'Supplement'
+
+        ELSE NULL
+    END AS SubmissionType,
+
+    SubmissionNo,
+
+    -- Convert submission status codes into descriptions
+    CASE
+        WHEN TRIM(SubmissionStatus) = 'AP'
+            THEN 'Approval'
+
+        WHEN TRIM(SubmissionStatus) = 'TA'
+            THEN 'Tentative Approval'
+
+        ELSE NULL
+    END AS SubmissionStatus,
+
+    -- Remove leading/trailing spaces from the class code
+    TRIM(SubmissionClassCodeID)
+        AS SubmissionClassCodeID,
+
+    -- Remove time and keep only the date
+    TRY_CONVERT(DATE, SubmissionStatusDate)
+        AS SubmissionStatusDate
+
+FROM Bronze.Submission;
+GO

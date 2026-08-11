@@ -337,3 +337,29 @@ SELECT
 
 FROM Bronze.Submission;
 GO
+-- ============================================================
+-- SILVER LAYER - TE
+-- Load and clean data from Bronze.TE
+-- ============================================================
+
+-- Remove previously loaded data before reloading
+TRUNCATE TABLE Silver.TE;
+GO
+
+INSERT INTO Silver.TE
+(
+    ApplNo,
+    ProductNo,
+    MarketingStatusID,
+    TECode
+)
+SELECT
+    ApplNo,
+    ProductNo,
+    MarketingStatusID,
+
+    -- Remove leading and trailing spaces
+    TRIM(TECode) AS TECode
+
+FROM Bronze.TE;
+GO

@@ -332,7 +332,7 @@ SELECT
         AS SubmissionClassCodeID,
 
     -- Remove time and keep only the date
-    TRY_CONVERT(DATE, SubmissionStatusDate)
+    TRY_CONVERT(DATE, SubmissionStatusDate, 105) AS SubmissionStatusDate
         AS SubmissionStatusDate
 
 FROM Bronze.Submission;

@@ -133,3 +133,61 @@ CREATE TABLE Gold.Fact_Product
     ReferenceStandard NVARCHAR(50)
 );
 GO
+
+/*
+===============================================================================
+DDL Script: Create Gold Fact Table - Fact_Patent
+===============================================================================
+
+Script Purpose:
+    Creates the Gold.Fact_Patent table.
+
+    The fact table stores unique patent records associated with a
+    pharmaceutical application and product.
+
+Grain:
+    One row represents one unique patent record for an
+    Application + Product + Patent + Patent Use/Drug Classification.
+
+Source:
+    Silver.Patent
+    Silver.Products
+
+Related Dimensions:
+    Gold.Dim_Application
+    Gold.Dim_Drug
+===============================================================================
+*/
+
+USE PharmaPatentEDA;
+GO
+
+-- Drop table if it already exists
+IF OBJECT_ID('Gold.Fact_Patent', 'U') IS NOT NULL
+    DROP TABLE Gold.Fact_Patent;
+GO
+
+-- Create Fact_Patent
+CREATE TABLE Gold.Fact_Patent
+(
+    PatentKey INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+
+    ApplicationKey INT NOT NULL,
+    DrugKey INT NOT NULL,
+
+    ApplNo NVARCHAR(50),
+    ProductNo NVARCHAR(50),
+    PatentNo NVARCHAR(100),
+
+    PatentExpireDate DATE,
+
+    DrugSubstanceFlag NVARCHAR(50),
+    DrugProductFlag NVARCHAR(50),
+
+    PatentUseCode NVARCHAR(500),
+
+    DelistFlag NVARCHAR(50),
+
+    SubmissionDate DATE
+);
+GO

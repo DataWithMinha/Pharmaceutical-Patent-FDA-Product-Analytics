@@ -234,3 +234,117 @@ SELECT
 FROM ProductDrugMatch
 WHERE rn = 1;
 GO
+
+/*
+===============================================================================
+DML Script: Load Gold Fact Table - Fact_Patent
+===============================================================================
+
+Script Purpose:
+    Loads Gold.Fact_Patent from the Silver layer.
+
+    The script:
+      1. Builds a DrugKey mapping from Silver.Products to Gold.Dim_Drug.
+      2. Uses ROW_NUMBER() to select one DrugKey for each
+         Application + Product combination.
+      3. Matches applications to Gold.Dim_Application.
+      4. Removes exact duplicate patent records using DISTINCT.
+      5. Inserts the final records into Gold.Fact_Patent.
+
+Expected Result:
+    22,131 rows based on the current Silver.Patent data.
+
+===============================================================================
+*/
+
+USE PharmaPatentEDA;
+GO
+
+-- =============================================================================
+-- Load Gold.Fact_Patent
+-- =============================================================================
+
+;WITH DrugMapping AS
+(
+    SELECT
+        p.ApplNo,
+        p.ProductNo,
+        d.DrugKey,
+
+        ROW_NUMBER() OVER
+        (
+            PARTITION BY
+                p.ApplNo,
+                p.ProductNo
+            ORDER BY
+                d.DrugKey
+        ) AS rn
+
+    FROM Silver.Products p
+
+    INNER JOIN Gold.Dim_Drug d
+        ON LTRIM(RTRIM(p.DrugName)) =
+           LTRIM(RTRIM(d.DrugName))
+
+       AND
+       (
+            LTRIM(RTRIM(p.ActiveIngredient)) =
+            LTRIM(RTRIM(d.ActiveIngredient))
+
+            OR
+            (
+                p.ActiveIngredient IS NULL
+                AND d.ActiveIngredient IS NULL
+            )
+       )
+
+       AND LTRIM(RTRIM(p.Form)) =
+           LTRIM(RTRIM(d.Form))
+
+       AND LTRIM(RTRIM(p.Strength)) =
+           LTRIM(RTRIM(d.Strength))
+)
+
+INSERT INTO Gold.Fact_Patent
+(
+    ApplicationKey,
+    DrugKey,
+    ApplNo,
+    ProductNo,
+    PatentNo,
+    PatentExpireDate,
+    DrugSubstanceFlag,
+    DrugProductFlag,
+    PatentUseCode,
+    DelistFlag,
+    SubmissionDate
+)
+
+SELECT DISTINCT
+    a.ApplicationKey,
+    dm.DrugKey,
+    p.Appl_No,
+    p.Product_No,
+    p.Patent_No,
+    p.Patent_Expire_Date,
+    p.Drug_Substance_Flag,
+    p.Drug_Product_Flag,
+    p.Patent_Use_Code,
+    p.Delist_Flag,
+    p.Submission_Date
+
+FROM Silver.Patent p
+
+-- Match each patent to exactly one DrugKey
+INNER JOIN DrugMapping dm
+    ON p.Appl_No = dm.ApplNo
+   AND p.Product_No = dm.ProductNo
+   AND dm.rn = 1
+
+-- Match each patent application to the Application dimension
+INNER JOIN Gold.Dim_Application a
+    ON LTRIM(RTRIM(p.Appl_No)) =
+       LTRIM(RTRIM(a.ApplNo))
+
+WHERE p.Appl_No IS NOT NULL;
+GO

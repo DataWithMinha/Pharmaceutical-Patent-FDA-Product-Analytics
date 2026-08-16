@@ -43,6 +43,32 @@ SELECT DISTINCT
 FROM Silver.Application
 WHERE ApplNo IS NOT NULL;
 GO
+-- ============================================================
+-- Add CompanyKey to Dim_Application
+-- ============================================================
+
+ALTER TABLE Gold.Dim_Application
+ADD CompanyKey INT NULL;
+GO
+
+
+-- Populate CompanyKey using SponsorName
+UPDATE da
+SET da.CompanyKey = dc.CompanyKey
+FROM Gold.Dim_Application da
+INNER JOIN Silver.Application sa
+    ON da.ApplNo = sa.ApplNo
+INNER JOIN Gold.Dim_Company dc
+    ON LTRIM(RTRIM(sa.SponsorName)) =
+       LTRIM(RTRIM(dc.SponsorName));
+GO
+
+
+-- Fallback for application 205581
+UPDATE Gold.Dim_Application
+SET CompanyKey = 988
+WHERE ApplNo = 205581;
+GO
 
 
 -- ============================================================
